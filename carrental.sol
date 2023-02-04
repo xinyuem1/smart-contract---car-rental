@@ -166,8 +166,7 @@ contract MyContract {
     public returncheck(_id) isCompany(msg.sender){
         if (carlist[_id]._carstate != State.Available){
             carlist[_id]._carstate = State.NotReturned;
-            takeDeposit(_id, carlist[_id]._depositfee);
-            console.log("Not return", _id,"The car is not returned after the rental period and the deposite is confiscated ");
+            console.log("Not return", _id,"The car is not returned after the rental period.");
         }
     }
 
