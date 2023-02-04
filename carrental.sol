@@ -1,8 +1,10 @@
-pragma solidity 0.5.1;
+pragma solidity ^0.5.0;
 import "hardhat/console.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v2.3.0/contracts/math/SafeMath.sol";
 pragma experimental ABIEncoderV2;
 
 contract MyContract {
+    using SafeMath for uint;
     enum ContractState {Active, Suspended}
     enum State {Available, Rented, Damaged, UnderRepair, NotReturned, Locked, Inspection}
     State[] statearray = [State.Available, State.Rented, State.Damaged, State.UnderRepair, State.NotReturned, State.Locked, State.Inspection];
