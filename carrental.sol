@@ -24,7 +24,7 @@ contract MyContract {
         uint _rentalprice;
         uint _depositfee;
         State _carstate;
-        address _currentOwner;
+        address payable _currentOwner;
     }
 
     Car[] carlist;
@@ -37,21 +37,25 @@ contract MyContract {
         carlist.push(Car(2, "BMW", 10, 20, State.UnderRepair, _wallet));
     }
 
-
+    // check car availability
     modifier rentcheck(uint _id) {
         require(carlist[_id]._carstate == State.Available, "This car is currently not availble for rental");
         _;
     }
     
+    // check car rented
     modifier returncheck(uint _id) {
         require(carlist[_id]._carstate == State.Rented, "This car is not rented out");
         _;
     }
+
+    // check company
     modifier isCompany (address user) {
         require(wallet == user, "This function can only be called by ABC Rental Company");
         _;
     }
 
+    // check 
     modifier isactive (){
         require(currentcontractstate == ContractState.Active, "This contract is currently suspended");
         _;
@@ -142,6 +146,7 @@ contract MyContract {
         console.log("Car", _id, "is returned and pending a mechanic to conduct an inspection of car condition.");
     }
 
+    // assumes maintenanceexpense will not exceed deposite amount
     function checkCondition(uint _id, bool _damage, uint maintenanceexpense) 
     public Conditioncheck(_id){
         if (carlist[_id]._carstate == State.NotReturned){
@@ -154,13 +159,14 @@ contract MyContract {
         }
     }
 
-    function takeDeposit(uint _id, uint nonrefundableamount) view public {
-        //To be done
+    function takeDeposit(uint _id, uint nonrefundableamount) 
+    public {
+        carlist[_id]._currentOwner.transfer(carlist[_id]._depositfee*1000000000000000000-nonrefundableamount);
         console.log("Take Deposit", _id, nonrefundableamount);
     }
 
-    function returnDeposit(uint _id) view public {
-        //To be done
+    function returnDeposit(uint _id) public {
+        carlist[_id]._currentOwner.transfer(carlist[_id]._depositfee*1000000000000000000);
         console.log("Return Deposit", _id);
     }
     
@@ -202,6 +208,3 @@ contract MyContract {
     //     uint result = a - b;
     //     return result;
     // }
-
-
-}
