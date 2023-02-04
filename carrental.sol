@@ -104,7 +104,8 @@ contract MyContract {
 
     function showTotalCost(uint _id, uint rentalDays)
     view public isPositive(rentalDays) returns(uint){
-        safeAdd(safeMul(carlist[_id]._rentalprice, rentalDays),carlist[_id]._depositfee);
+        
+        SafeMath.add(SafeMath.mul(carlist[_id]._rentalprice, rentalDays),carlist[_id]._depositfee);
         // safeAdd(mulresult,carlist[_id]._depositfee);
         //return carlist[_id]._rentalprice*rentalDays+carlist[_id]._depositfee;
     }
@@ -119,7 +120,7 @@ contract MyContract {
     }
 
     function makepayment() public payable{
-        currentamountpaid = safeAdd(currentamountpaid,msg.value);
+        currentamountpaid = SafeMath.add(currentamountpaid,msg.value);
         //currentamountpaid += msg.value;
     }
 
@@ -168,7 +169,7 @@ contract MyContract {
     public returncheck(_id) isCompany(msg.sender){
         if (carlist[_id]._carstate != State.Available){
             carlist[_id]._carstate = State.NotReturned;
-            console.log("Not return", _id,"The car is not returned after the rental period.");
+            console.log("Not return", _id,"The car is not returned after the rental period");
         }
     }
 
@@ -184,23 +185,23 @@ contract MyContract {
     console.log("Activate","The contract is activated");
     }
 
-    function safeMul(uint a, uint b)
-    public pure returns(uint){
-        uint result = a * b;
-        return result;
-    }
+    // function safeMul(uint a, uint b)
+    // public pure returns(uint){
+    //     uint result = a * b;
+    //     return result;
+    // }
 
-    function safeAdd(uint a, uint b)
-    public pure returns(uint){
-        uint result = a + b;
-        return result;
-    }
+    // function safeAdd(uint a, uint b)
+    // public pure returns(uint){
+    //     uint result = a + b;
+    //     return result;
+    // }
 
-    function safeMinu(uint a, uint b)
-    public pure returns(uint){
-        uint result = a - b;
-        return result;
-    }
+    // function safeMinu(uint a, uint b)
+    // public pure returns(uint){
+    //     uint result = a - b;
+    //     return result;
+    // }
 
 
 }
