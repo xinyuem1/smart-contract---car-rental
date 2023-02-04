@@ -49,17 +49,31 @@ contract MyContract {
         _;
     }
 
+
     // check company
     modifier isCompany (address user) {
         require(wallet == user, "This function can only be called by ABC Rental Company");
         _;
     }
 
-    // check 
+    // check car damaged
+    modifier damagecheck(uint _id) {
+        require(carlist[_id]._carstate == State.Damaged, "This car is not damaged");
+        _;
+    }
+
+    // check car under repair
+    modifier repaircheck(uint _id) {
+        require(carlist[_id]._carstate == State.UnderRepair, "This car is not under repair");
+        _;
+    }
+  
     modifier isactive (){
         require(currentcontractstate == ContractState.Active, "This contract is currently suspended");
         _;
     }
+
+    // 
     modifier confirmpaymentcheck(uint accumulatedamount, uint cost) {
         console.log("The remaining amount yet to pay:", cost-accumulatedamount/1000000000000000000);
         require(accumulatedamount/1000000000000000000 >= cost, "The amount you have transfered is not enough");
@@ -77,7 +91,6 @@ contract MyContract {
     }
 
     function listCar() public view returns(Car[] memory){
-
         for(uint i=0; i<carlist.length; i++){
             console.log("Car id:", carlist[i]._id);
             console.log("Car model:", carlist[i]._model);
@@ -170,6 +183,21 @@ contract MyContract {
         console.log("Return Deposit", _id);
     }
     
+    function sendRepair(uint _id) 
+    public damagecheck(_id){
+        carlist[_id]._carstate = State.UnderRepair;
+        console.log("Car", _id, "is under repair.");
+    }
+
+
+    function repairDone(uint _id) 
+    public repaircheck(_id){
+        carlist[_id]._carstate = State.Available;
+        console.log("Repair done. Car", _id, "is available.");
+    }
+
+
+
 
     function carNotReturned(uint _id) 
     public returncheck(_id) isCompany(msg.sender){
@@ -178,33 +206,3 @@ contract MyContract {
             console.log("Not return", _id,"The car is not returned after the rental period");
         }
     }
-
-    function suspend()
-    public isCompany(msg.sender){ 
-    currentcontractstate == ContractState.Suspended;
-    console.log("Suspend", "The contract is suspended");
-    }
-
-    function activate()
-    public isCompany(msg.sender){ 
-    currentcontractstate == ContractState.Active;
-    console.log("Activate","The contract is activated");
-    }
-
-    // function safeMul(uint a, uint b)
-    // public pure returns(uint){
-    //     uint result = a * b;
-    //     return result;
-    // }
-
-    // function safeAdd(uint a, uint b)
-    // public pure returns(uint){
-    //     uint result = a + b;
-    //     return result;
-    // }
-
-    // function safeMinu(uint a, uint b)
-    // public pure returns(uint){
-    //     uint result = a - b;
-    //     return result;
-    // }
