@@ -197,8 +197,6 @@ contract MyContract {
     }
 
 
-
-
     function carNotReturned(uint _id) 
     public returncheck(_id) isCompany(msg.sender){
         if (carlist[_id]._carstate != State.Available){
@@ -206,3 +204,17 @@ contract MyContract {
             console.log("Not return", _id,"The car is not returned after the rental period");
         }
     }
+
+    function suspend()
+    public isCompany(msg.sender){ 
+    currentcontractstate == ContractState.Suspended;
+    console.log("Suspend", "The contract is suspended");
+    }
+
+    function activate()
+    public isCompany(msg.sender){ 
+    currentcontractstate == ContractState.Active;
+    console.log("Activate","The contract is activated");
+    }
+
+}
