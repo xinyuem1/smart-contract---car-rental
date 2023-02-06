@@ -166,35 +166,39 @@ contract MyContract {
     public returncheck(_id) 
     returns(uint){
         carlist[_id]._carstate = State.Inspection;
-        carlist[_id]._currentOwner = wallet;
         console.log("Car", _id, "is returned and pending a mechanic to conduct an inspection of car condition.");
     }
     
     // call following deposit returned with input of damage condition
-    // (assumes maintenanceexpense will not exceed deposite amount)
-    function checkCondition(uint _id, bool _damage, uint maintenanceexpense) 
+    function checkCondition(uint _id, bool _damage) 
     public Conditioncheck(_id){
         if (carlist[_id]._carstate == State.NotReturned){
-            takeDeposit(_id, carlist[_id]._depositfee);
+            takeDeposit(_id);
+            carlist[_id]._carstate = State.Damaged;       
         } else if(_damage){
+            takeDeposit(_id);
             carlist[_id]._carstate = State.Damaged;
-            takeDeposit(_id, maintenanceexpense);
         } else{
             returnDeposit(_id);
         }
+        
     }
-    
-    // return deposit after partial deduction
-    function takeDeposit(uint _id, uint nonrefundableamount) 
-    public {
-        carlist[_id]._currentOwner.transfer(carlist[_id]._depositfee*1000000000000000000-nonrefundableamount);
-        console.log("Take Deposit", _id, nonrefundableamount);
+
+    // transfer deposit to company
+    function takeDeposit(uint _id) 
+    public isCompany(msg.sender){
+        wallet.transfer(carlist[_id]._depositfee*1000000000000000000);
+        carlist[_id]._currentOwner = wallet;
+        console.log("Take Deposit of car", _id);
     }
-    
-    // return all deposit
-    function returnDeposit(uint _id) public {
+
+    // return deposit to customer
+    function returnDeposit(uint _id) 
+    public isCompany(msg.sender){
         carlist[_id]._currentOwner.transfer(carlist[_id]._depositfee*1000000000000000000);
-        console.log("Return Deposit", _id);
+        carlist[_id]._carstate = State.Available;
+        carlist[_id]._currentOwner = wallet;
+        console.log("Return Deposit of car", _id);
     }
     
     // car sent to repair by company
