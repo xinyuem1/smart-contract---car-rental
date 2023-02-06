@@ -16,6 +16,7 @@ contract MyContract {
     uint  carinrentalprocess;
     uint currentamountpaid;
     uint mulresult;
+    uint checkcon;
 
     
     struct Car {
@@ -128,7 +129,7 @@ contract MyContract {
     
     // calculated cost with input of "_id" of car & days to rent
     function showTotalCost(uint _id, uint rentalDays)
-    view public isPositive(rentalDays) returns(uint){      
+    view public isPositive(rentalDays) returns(uint){
         SafeMath.add(SafeMath.mul(carlist[_id]._rentalprice, rentalDays),carlist[_id]._depositfee);
         // safeAdd(mulresult,carlist[_id]._depositfee);
         //return carlist[_id]._rentalprice*rentalDays+carlist[_id]._depositfee;
@@ -169,19 +170,29 @@ contract MyContract {
         console.log("Car", _id, "is returned and pending a mechanic to conduct an inspection of car condition.");
     }
     
-    // call following deposit returned with input of damage condition
-    function checkCondition(uint _id, bool _damage) 
+    // check with state then take/return deposit with input of damage condition
+    function checkCondition(uint _id, bool damage) 
     public Conditioncheck(_id){
         if (carlist[_id]._carstate == State.NotReturned){
+            // if not return, take deposit then check with damage
             takeDeposit(_id);
-            carlist[_id]._carstate = State.Damaged;       
-        } else if(_damage){
-            takeDeposit(_id);
+            console.log(" Car", _id, "is not returned.");
+            if (damage) {
+                carlist[_id]._carstate = State.Damaged;
+                console.log("Car", _id, "is damaged.");
+            } else {
+                carlist[_id]._carstate = State.Available;
+                console.log("Car", _id, "is now available.");
+            }
+
+        } else if(damage){
             carlist[_id]._carstate = State.Damaged;
+            console.log("Car", _id, "is damaged.");
+            takeDeposit(_id);    
         } else{
             returnDeposit(_id);
+            console.log("Car", _id, "is now available.");
         }
-        
     }
 
     // transfer deposit to company
@@ -224,7 +235,7 @@ contract MyContract {
             console.log("Not return", _id,"The car is not returned after the rental period");
         }
     }
-    
+
     // convert contract status suspend
     function suspend()
     public isCompany(msg.sender){ 
